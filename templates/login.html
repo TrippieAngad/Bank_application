@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank Login</title>
+<style>
+  /* Global Styles */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #4a90e2, #50e3c2);
+  }
+
+  /* Container */
+  .container {
+    background: #fff;
+    padding: 3rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    width: 350px;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .container:hover { transform: translateY(-5px); }
+
+  h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  /* Input Fields */
+  input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  input:focus {
+    border-color: #4a90e2;
+    outline: none;
+  }
+
+  /* Buttons */
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #4a90e2;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background-color: #357ab7;
+  }
+  .secondary-btn {
+    background-color: #50e3c2;
+    margin-top: 8px;
+  }
+  .secondary-btn:hover {
+    background-color: #3bb69f;
+  }
+
+  /* Message */
+  #message {
+    margin-top: 15px;
+    font-weight: bold;
+    min-height: 1.2em;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Bank Login</h2>
+  <input type="text" id="username" placeholder="Username" />
+  <input type="password" id="password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <button class="secondary-btn" onclick="window.location.href='/create_new'">Create Account</button>
+  <div id="message"></div>
+</div>
+
+<script>
+async function login() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const messageBox = document.getElementById('message');
+
+  if (!username || !password) {
+    messageBox.textContent = "Please enter username & password";
+    messageBox.style.color = 'red';
+    return;
+  }
+
+  try {
+    const response = await fetch('/login', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({username,password})
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      messageBox.textContent = "Login successful! Redirecting...";
+      messageBox.style.color = 'green';
+      setTimeout(() => window.location.href = data.redirect_url, 500);
+    } else {
+      messageBox.textContent = data.error;
+      messageBox.style.color = 'red';
+    }
+
+  } catch(err) {
+    console.error(err);
+    messageBox.textContent = "Error connecting to server";
+    messageBox.style.color = 'red';
+  }
+}
+</script>
+</body>
+</html>
