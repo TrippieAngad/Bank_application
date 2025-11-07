@@ -53,3 +53,41 @@ class Bankdb: # create a data base class to handle database sessions, sql querie
         if self.conn:
             self.conn.close()
 
+# ---------- endpoints ----------
+@app.route('/', methods=['GET']) # home page
+def home():
+    return render_template('login.html')
+
+
+@app.route('/login', methods=['POST']) #login endpoint and 
+def login():
+    data = request.get_json()
+    if not data:
+        return jsonify(error="Invalid JSON"), 400
+
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify(error="Missing credentials"), 400
+
+    db = Bankdb()
+    if db.conn is None:
+        return jsonify(error="Database connection failed"), 500
+
+    user = db.fetch_user(username)
+    if user is None:
+        db.close()
+        return jsonify(error="User not found"), 401
+
+    username_db = user[4]
+    password_db = user[5]
+
+    if username == username_db and password == password_db:
+        session['current_user'] = username
+        db.close()
+        return jsonify(success=True, redirect_url=url_for('profile'))
+
+    db.close()
+    return jsonify(error="Invalid username or password"), 401
+
