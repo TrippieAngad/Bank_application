@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+<style>
+  /* Global styles */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #4a90e2, #50e3c2);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }
+
+  /* Container */
+  .profile-container {
+    background: #fff;
+    padding: 3rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    width: 350px;
+    text-align: center;
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Form fields */
+  input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+    outline: none;
+  }
+
+  /* Buttons */
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .update-btn {
+    background-color: #4a90e2;
+    color: white;
+  }
+
+  .update-btn:hover {
+    background-color: #357ab7;
+  }
+
+  .logout-btn {
+    background-color: #50e3c2;
+    color: white;
+    margin-top: 10px;
+  }
+
+  .logout-btn:hover {
+    background-color: #3bb69f;
+  }
+</style>
+</head>
+<body>
+<div class="profile-container">
+  <h2>Your Profile</h2>
+
+  <form method="POST">
+    <input type="text" name="amount to deposit" value="{{ user[1] }}" placeholder="amount to deposit" /><br>
+    <input type="text" name="signature" value="{{ user[2] }}" placeholder="signature" /><br>
+    <button type="submit" class="update-btn">Update Profile</button>
+  </form>
+
+  <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+</div>
+</body>
+</html>

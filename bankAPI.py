@@ -91,3 +91,25 @@ def login():
     db.close()
     return jsonify(error="Invalid username or password"), 401
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if 'current_user' not in session:
+        return redirect(url_for('home'))
+
+    username = session['current_user']
+    db = Bankdb()
+
+    if request.method == 'POST':
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        job_description = request.form.get('job_description')
+        db.update_user(username, first_name, last_name, job_description)
+
+    user_data = db.fetch_user(username)
+    db.close()
+    return render_template('profile.html', user=user_data)
+
+@app.route('/logout')
+def logout():
+    session.pop('current_user', None)
+    return redirect(url_for('home'))
