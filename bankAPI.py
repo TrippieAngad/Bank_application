@@ -109,6 +109,29 @@ def profile():
     db.close()
     return render_template('profile.html', user=user_data)
 
+@app.route('/create_new', methods=['GET', 'POST']) #allows user to create new account if not already signed up
+def create_new():
+    if request.method == 'POST':
+        data = request.get_json()
+        if not data:
+            return jsonify(error="Invalid JSON"), 400
+
+        username = data.get('username')
+        password = data.get('password')
+        first = data.get('first_name')
+        last = data.get('last_name')
+        job = data.get('job_description')
+
+        if not username or not password or not first or not last:
+            return jsonify(error="Missing fields"), 400
+
+        db = Bankdb()
+        db.register_account_creds(username, password, first, last, job)
+        db.close()
+        return jsonify(success=True, redirect_url=url_for('home'))
+
+    return render_template('register.html')
+
 @app.route('/logout')
 def logout():
     session.pop('current_user', None)
