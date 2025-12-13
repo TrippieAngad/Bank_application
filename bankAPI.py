@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, session, redirect, url_for, jsonify
 import psycopg2
 import os
-from dotenv import load_env
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
