@@ -3,19 +3,21 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.getenv("SECRET_KEY", os.urandom(24))
 
 
 class Bankdb: # create a data base class to handle database sessions, sql queries
     def __init__(self):
         try:
             self.conn = psycopg2.connect(
-                host=os.getenv("DB_HOST"), #using environment variables to mask database info
+                host=os.getenv("DB_HOST"),
                 database=os.getenv("DB_NAME"),
                 user=os.getenv("DB_USER"),
                 password=os.getenv("DB_PASSWORD"),
-                port=os.getenv("DB_PORT", 5432)  
+                port=os.getenv("DB_PORT", 5432)
             )
             self.cur = self.conn.cursor()
         except psycopg2.Error as e:
@@ -52,6 +54,7 @@ class Bankdb: # create a data base class to handle database sessions, sql querie
             self.cur.close()
         if self.conn:
             self.conn.close()
+
 
 # ---------- endpoints ----------
 @app.route('/', methods=['GET']) # home page
@@ -91,6 +94,7 @@ def login():
     db.close()
     return jsonify(error="Invalid username or password"), 401
 
+
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if 'current_user' not in session:
@@ -108,6 +112,7 @@ def profile():
     user_data = db.fetch_user(username)
     db.close()
     return render_template('profile.html', user=user_data)
+
 
 @app.route('/create_new', methods=['GET', 'POST']) #allows user to create new account if not already signed up
 def create_new():
@@ -132,10 +137,12 @@ def create_new():
 
     return render_template('register.html')
 
+
 @app.route('/logout')
 def logout():
     session.pop('current_user', None)
     return redirect(url_for('home'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

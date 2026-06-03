@@ -1,1 +1,8 @@
+.DS_Store
+__pycache__/
+*.py[cod]
 .env
+api_env/
+api_env_broken_*/
+BankProjectBlameInfo/
+portfolio_site/

@@ -85,8 +85,9 @@
   <h2>Your Profile</h2>
 
   <form method="POST">
-    <input type="text" name="amount to deposit" value="{{ user[1] }}" placeholder="amount to deposit" /><br>
-    <input type="text" name="signature" value="{{ user[2] }}" placeholder="signature" /><br>
+    <input type="text" name="first_name" value="{{ user[1] }}" placeholder="First Name" /><br>
+    <input type="text" name="last_name" value="{{ user[2] }}" placeholder="Last Name" /><br>
+    <input type="text" name="job_description" value="{{ user[3] }}" placeholder="Job Description" /><br>
     <button type="submit" class="update-btn">Update Profile</button>
   </form>
 
