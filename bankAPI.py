@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, session, redirect, url_for, jsonify
 import psycopg2
 import os
+from invalid_credentials import field_nonexistent
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,13 +42,12 @@ class Bankdb: # create a data base class to handle database sessions, sql querie
         )
         self.conn.commit()
 
-    def register_account_creds(self, username, password, first_name, last_name, job_description):
+    def register_account_creds(self, username, password, first_name, last_name, job_description): 
         self.cur.execute(
-            'INSERT INTO public."customers" (username, password, first_name, last_name, job_description) '
+            'INSERT INTO public."customers"(username, password, first_name, last_name, job_description) '
             'VALUES (%s, %s, %s, %s, %s)',
             (username, password, first_name, last_name, job_description)
         )
-        self.conn.commit()
 
     def close(self):
         if self.cur:
@@ -68,9 +68,12 @@ def login():
     if not data:
         return jsonify(error="Invalid JSON"), 400
 
-    username = data.get('username')
-    password = data.get('password')
-
+    try:
+        username = data.get('username')
+        password = data.get('password')
+    except field_nonexistent as fe:
+        print("\'username\' or \'password\' doesn't exist or both don't exist")
+        
     if not username or not password:
         return jsonify(error="Missing credentials"), 400
 
