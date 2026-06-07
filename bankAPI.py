@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template, session, redirect, url_for, jsonify
 import psycopg2
 import os
-from invalid_credentials import field_nonexistent
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,7 +25,7 @@ class Bankdb: # create a data base class to handle database sessions, sql querie
             self.conn = None
             self.cur = None
 
-    def fetch_user(self, username):
+    def fetch_user(self, username): # returns whole row
         self.cur.execute(
             'SELECT customer_id, first_name, last_name, job_description, username, password '
             'FROM public."customers" WHERE username=%s',
@@ -48,6 +47,7 @@ class Bankdb: # create a data base class to handle database sessions, sql querie
             'VALUES (%s, %s, %s, %s, %s)',
             (username, password, first_name, last_name, job_description)
         )
+        self.conn.commit()
 
     def close(self):
         if self.cur:
@@ -64,15 +64,9 @@ def home():
 
 @app.route('/login', methods=['POST']) #login endpoint and 
 def login():
-    data = request.get_json()
-    if not data:
-        return jsonify(error="Invalid JSON"), 400
-
-    try:
-        username = data.get('username')
-        password = data.get('password')
-    except field_nonexistent as fe:
-        print("\'username\' or \'password\' doesn't exist or both don't exist")
+    data = request.get_json(silent=True) or request.form
+    username = (data.get('username') or '').strip()
+    password = (data.get('password') or '').strip()
         
     if not username or not password:
         return jsonify(error="Missing credentials"), 400
@@ -120,15 +114,13 @@ def profile():
 @app.route('/create_new', methods=['GET', 'POST']) #allows user to create new account if not already signed up
 def create_new():
     if request.method == 'POST':
-        data = request.get_json()
-        if not data:
-            return jsonify(error="Invalid JSON"), 400
+        data = request.get_json(silent=True) or request.form
 
-        username = data.get('username')
-        password = data.get('password')
-        first = data.get('first_name')
-        last = data.get('last_name')
-        job = data.get('job_description')
+        username = (data.get('username') or '').strip()
+        password = (data.get('password') or '').strip()
+        first = (data.get('first_name') or '').strip()
+        last = (data.get('last_name') or '').strip()
+        job = (data.get('job_description') or '').strip()
 
         if not username or not password or not first or not last:
             return jsonify(error="Missing fields"), 400
